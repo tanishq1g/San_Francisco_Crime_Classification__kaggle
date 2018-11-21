@@ -7,10 +7,6 @@ class Feature_Engineering:
     def __init__(self):
         self.features = []
 
-    def X_Y_remove_outliers(self, data):
-        data = data[data['X'] < -122.25]
-        data = data[data['Y'] < 40]
-
     def extract_dt_time(self, data):
         data['Hour'] = data.Dates.dt.hour
         data['Year'] = data.Dates.dt.year
@@ -45,13 +41,13 @@ class Feature_Engineering:
             data['night'] = data['Hour'].apply(lambda x: 1 if x in [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0] else 0)
             if(add_feature):
                 self.features += ['morning', 'night']
-        else if(nbins == 3):
+        elif(nbins == 3):
             data['night'] = data['Hour'].apply(lambda x: 1 if x in [1, 2, 3, 4, 5, 6,7] else 0)
             data['morning'] = data['Hour'].apply(lambda x: 1 if x in [8, 9, 10, 11] else 0)
             data['evening'] = data['Hour'].apply(lambda x: 1 if x in [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0] else 0)
             if(add_feature):
                 self.features += ['morning', 'night', 'evening']
-        else if(nbins == 4):
+        elif(nbins == 4):
             data['morning'] = data['Hour'].apply(lambda x: 1 if x in [7, 8, 9, 10, 11] else 0)
             data['evening'] = data['Hour'].apply(lambda x: 1 if x in [17, 18, 19, 20, 21, 22] else 0)
             data['night'] = data['Hour'].apply(lambda x: 1 if x in [23, 0, 1, 2, 3, 4, 5, 6] else 0)
