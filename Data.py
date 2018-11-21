@@ -11,7 +11,8 @@ class Data:
         self.test = pd.read_csv(self.file_test, parse_dates = ['Dates'])
 
     def form_labels(self, label_col):
-        self.train_labels = self.train[label_col]
+        le = preprocessing.LabelEncoder()
+        self.train_labels = le.fit_transform(self.train[label_col])
    
     def drop_labels(self, label_col):
         self.train = self.train.drop(columns = [label_col])
