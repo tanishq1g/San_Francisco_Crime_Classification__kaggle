@@ -1,6 +1,7 @@
 import pandas as pd 
 import numpy as np
 from sklearn import preprocessing
+import pygeohash as pgh
 
 class Feature_Engineering:
 
@@ -54,6 +55,9 @@ class Feature_Engineering:
             data['afternoon'] = data['Hour'].apply(lambda x: 1 if x in [12, 13, 14, 15, 16] else 0)
             if(add_feature):
                 self.features += ['morning', 'night', 'evening', 'afternoon']
+
+    def geohashing(self, train, test, add_feature = True):
+    
 
     
 
