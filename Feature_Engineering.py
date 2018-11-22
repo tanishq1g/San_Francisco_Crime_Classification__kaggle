@@ -12,7 +12,7 @@ class Feature_Engineering:
         data['Hour'] = data.Dates.dt.hour
         data['Year'] = data.Dates.dt.year
         data['Month'] = data.Dates.dt.month
-        data['Minute'] = data.Dates.dt.minute
+        data['Minute'] = data.Dates.dt.minute - 30
     
     def onehot(self, data, columns, add_feature = True):
         for col in columns:
@@ -56,9 +56,57 @@ class Feature_Engineering:
             if(add_feature):
                 self.features += ['morning', 'night', 'evening', 'afternoon']
 
-    def geohashing(self, train, test, add_feature = True):
-    
+    def geohashing(self, train, test, precision = 8, pivot_col = 'Resolution', add_feature = True):
+        geo1 = train.apply(lambda x: pgh.encode(x.X, x.Y, precision = precision), axis = 1)
+        train = pd.concat([train, pd.get_dummies(geo1)], axis = 1)
+        geo2 = test.apply(lambda x: pgh.encode(x.X, x.Y, precision = precision), axis = 1)
+        test = pd.concat([test, pd.get_dummies(geo2)], axis = 1)
+        if(add_feature):
+            self.features += geo1.unique().tolist()
+        c1 = 0
+        c2 = 0
+        for i in np.asarray(geo1.unique()):
+            flag = 0
+            for j in np.asarray(geo2.unique()):
+                if(i == j):
+                    flag = 1
+                    c1 += 1
+            if(flag == 0):
+                c2 += 1
+                print('unique',i)
+                test[j] = test[pivot_col].apply(lambda x: 0)
+                if(add_feature):
+                    self.features += [j]
+        print('count',c1,c2)
+        c1 = 0
+        c2 = 0
+        for i in np.asarray(geo2.unique()):
+            flag = 0
+            for j in np.asarray(geo1.unique()):
+                if(i == j):
+                    flag = 1
+                    c1 += 1
+            if(flag == 0):
+                c2 += 1
+                print('unique',i)
+                train[j] = train[pivot_col].apply(lambda x: 0)
+                if(add_feature):
+                    self.features += [j]
+        print('count',c1,c2)
+        return train, test
 
+    def X_Y_rot(self, data, add_feature = True):
+        sc = preprocessing.StandardScaler()
+        sc.fit(data[['X', 'Y']])
+        data[['new_X'], ['new_Y']] = sc.transform([['X', 'Y']])
+        data["rot45_X"], data["rot45_Y"] = .707 * data["new_Y"] + .707 * data["new_X"], .707 * data["new_Y"] - .707 * data["new_X"]
+        data["rot30_X"], data["rot30_Y"] = (1.732/2) * data["new_X"] + (1./2) * data["new_Y"], (1.732/2) * train["Y"] - (1./2) * data["new_X"]
+        data["rot60_X"], data["rot60_Y"] = (1./2) * data["new_X"] + (1.732/2) * data["new_Y"], (1./2)* data["new_Y"] - (1.732/2) * data["new_X"]
+        data["radial_r"] = np.sqrt( np.power(data["new_Y"], 2) + np.power(data["new_X"], 2))
+        if(add_feature):
+            self.features += ['rot60_X', 'rot60_Y', 'rot30_X', 'rot30_Y', 'rot45_X', 'rot45_Y', 'radial_r']
+
+            
     
 
         
