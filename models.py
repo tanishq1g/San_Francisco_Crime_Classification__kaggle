@@ -1,0 +1,120 @@
+from sklearn.feature_extraction import text
+from sklearn import preprocessing
+from sklearn.metrics import log_loss, accuracy_score
+from sklearn.naive_bayes import BernoulliNB
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression, SGDClassifier
+from sklearn.metrics.classification import accuracy_score
+from sklearn.ensemble import VotingClassifier, ExtraTreesClassifier, RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
+import xgboost as xgb
+
+class Model:
+    
+    def __init__(self):
+
+    def score_calc(predictions, test_data[labels], score_type = 'logloss'):
+        if (score_type == 'logloss'):
+            print(("Log loss: ") + str(log_loss(test_data[labels], predictions)))
+        elif (score_type == 'accuracy'):
+            print(("Accuracy score: ") + str(accuracy_score(test_data[labels], predictions)))
+        else
+            print "-"
+
+    def lr_clf(self, train_data, test_data, features, labels, max_iter = 50, solver = 'sag', print_score = True, score_type):
+        lr_clf = LogisticRegression(
+            random_state = 200, 
+            solver = solver,  #optimisation algo
+            multi_class = 'multinomial',
+            penalty = 'l2',
+            max_iter = max_iter,
+            verbose = 1,
+            n_jobs = -1
+        )
+        lr_clf.fit(train_data[features], train_data[labels])
+        predictions = np.array(lr_clf.predict_proba(test_data[features]))
+        if (print_score == True):
+            score_calc(predictions, test_data[labels], score_type)
+
+    def bernb_clf(self, train_data, test_data, features, labels, print_score = True, score_type):
+        bernb_clf = BernoulliNB()
+        bernb_clf.fit(train_data[features], train_data[labels])
+        predictions = np.array(bernb_clf.predict_proba(test_data[features]))
+        if (print_score == True):
+            score_calc(predictions, test_data[labels], score_type)
+    
+    def sgd_clf(self, train_data, test_data, features, labels, 
+    loss = 'log', penalty = 'l2', alpha = 0.001, l1_ratio = 0.15, fit_intercept = True, 
+    max_iter = None, tol = None, shuffle = True, verbose = 1, epsilon = 0.1, 
+    learning_rate = 'optimal', eta0 = 0.0, power_t = 0.5, early_stopping = False, 
+    validation_fraction = 0.1, n_iter_no_change = 5, class_weight = None, warm_start = False, 
+    average = False, max_iter = 50, print_score = True):
+       sgd_clf = SGDClassifier(
+            random_state = 200,
+            loss = loss,
+            verbose = 1,
+            learning_rate = learning_rate,
+            penalty = penalty,
+            tol = tol,
+            shuffle = shuffle,
+            average = average,
+            alpha = alpha,
+            max_iter = max_iter,
+            n_jobs = -1,
+            validation_fraction = validation_fraction,
+            n_iter_no_change = n_iter_no_change,
+            class_weight = class_weight,
+            warm_start = warm_start,
+            l1_ratio = l1_ratio,
+            fit_intercept = fit_intercept,
+            epsilon = epsilon,
+            eta0 = eta0,
+            power_t = power_t,
+            early_stopping = early_stopping
+        )
+        sgd_clf.fit(train_data[features], train_data[labels])
+        predictions = np.array(sgd_clf.predict_proba(test_data[features]))
+        if (print_score == True):
+            score_calc(predictions, test_data[labels], 'log_loss')
+
+    #documentation link - https://xgboost.readthedocs.io/en/latest/python/python_api.html
+    def xgb_clf(self, train_data, test_data, features, labels, max_depth = 3, learning_rate = 0.1, 
+    n_estimators = 100, silent = True, objective = 'binary:logistic', booster = 'gbtree', nthread = None, 
+    gamma = 0, min_child_weight = 1, max_delta_step = 0, subsample = 1, colsample_bytree = 1, 
+    colsample_bylevel = 1, reg_alpha = 0, reg_lambda = 1, scale_pos_weight = 1, base_score = 0.5, 
+    early_stopping_rounds = 5, eval_metric = 'mlogloss', print_score = True):
+        xgb_clf = xgb.XGBClassifier(
+            random_state = 200,
+            max_depth = max_depth,
+            learning_rate = learning_rate,
+            n_estimators = n_estimators,
+            silent = silent,
+            objective = objective,
+            booster = booster,
+            reg_alpha = reg_alpha,
+            reg_lambda = reg_lambda,
+            n_jobs = -1,
+            nthread = nthread,
+            gamma = gamma,
+            min_child_weight = min_child_weight,
+            max_delta_step = max_delta_step,
+            colsample_bylevel = colsample_bylevel,
+            colsample_bytree = colsample_bytree, 
+            scale_pos_weight = scale_pos_weight,
+            base_score = base_score,
+            subsample = subsample
+        )
+
+        xgb_clf.fit(
+            X = train_data[features],
+            y = train_data[labels],
+            verbose = True,
+            early_stopping_rounds = early_stopping_rounds,
+            eval_set = [(test_data[features], test_data[labels])],
+            eval_metric = eval_metric
+        )
+        predictions = np.array(xgb_clf.predict_proba(test_data[features]))
+        if (print_score == True):
+            score_calc(predictions, test_data[labels], 'log_loss')
+            
+
+
