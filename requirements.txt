@@ -1,0 +1,7 @@
+numpy == 1.15.3
+pandas == 0.23.4
+scikit-learn == 0.20.0
+xgboost == 0.80
+nltk == 3.2.5
+matplotlib == 2.2.2
+pygeohash == 1.2.0
