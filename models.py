@@ -12,13 +12,13 @@ class Model:
     
     def __init__(self):
 
-    def score_calc(predictions, test_data[labels], score_type = 'logloss'):
+    def score_calc(self, predictions, test_data[labels], score_type = 'logloss'):
         if (score_type == 'logloss'):
             print(("Log loss: ") + str(log_loss(test_data[labels], predictions)))
         elif (score_type == 'accuracy'):
             print(("Accuracy score: ") + str(accuracy_score(test_data[labels], predictions)))
         else
-            print "-"
+            print("-")
 
     def lr_clf(self, train_data, test_data, features, labels, max_iter = 50, solver = 'sag', print_score = True, score_type):
         lr_clf = LogisticRegression(
