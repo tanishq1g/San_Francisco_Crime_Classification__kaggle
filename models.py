@@ -20,6 +20,7 @@ class Model:
         else
             print("-")
 
+    #documentation link - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression
     def lr_clf(self, train_data, test_data, features, labels, max_iter = 50, solver = 'sag', print_score = True, score_type):
         lr_clf = LogisticRegression(
             random_state = 200, 
@@ -35,6 +36,7 @@ class Model:
         if (print_score == True):
             score_calc(predictions, test_data[labels], score_type)
 
+    #documentation link - https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.BernoulliNB.html#sklearn.naive_bayes.BernoulliNB
     def bernb_clf(self, train_data, test_data, features, labels, print_score = True, score_type):
         bernb_clf = BernoulliNB()
         bernb_clf.fit(train_data[features], train_data[labels])
@@ -42,6 +44,7 @@ class Model:
         if (print_score == True):
             score_calc(predictions, test_data[labels], score_type)
     
+    #documentation link - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html#sklearn.linear_model.SGDClassifier
     def sgd_clf(self, train_data, test_data, features, labels, 
     loss = 'log', penalty = 'l2', alpha = 0.001, l1_ratio = 0.15, fit_intercept = True, 
     max_iter = None, tol = None, shuffle = True, verbose = 1, epsilon = 0.1, 
@@ -116,5 +119,30 @@ class Model:
         if (print_score == True):
             score_calc(predictions, test_data[labels], 'log_loss')
             
-
-
+        # documentation link - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html#sklearn.ensemble.RandomForestClassifier
+        def randfor_clf(self, n_estimators = 100, criterion = 'gini', max_depth = None, 
+        min_samples_split = 2, min_samples_leaf = 1, min_weight_fraction_leaf = 0.0, 
+        max_features = 'auto', max_leaf_nodes = None, min_impurity_decrease = 0.0, 
+        bootstrap = True, oob_score = False, warm_start = False, class_weight = None):
+        randfor_clf = RandomForestClassifier(
+            random_state = 200, 
+            criterion = criterion,
+            max_depth = max_depth,
+            max_features = max_features,
+            max_leaf_nodes = max_leaf_nodes,
+            min_impurity_decrease = min_impurity_decrease,
+            min_samples_leaf = min_samples_leaf,
+            min_samples_split = min_samples_split,
+            min_weight_fraction_leaf = min_weight_fraction_leaf,
+            bootstrap = bootstrap,
+            oob_score = oob_score,
+            warm_start = warm_start,
+            class_weight = class_weight,
+            n_estimators = n_estimators,
+            verbose = 1,
+            n_jobs = -1
+        )
+        randfor_clf.fit(train_data[features], train_data[labels])
+        predictions = np.array(randfor_clf.predict_proba(test_data[features]))
+        if (print_score == True):
+            score_calc(predictions, test_data[labels], score_type)
