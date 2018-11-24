@@ -168,4 +168,15 @@ class Feature_Engineering:
             test[base + '_odds'] = test[base].apply(lambda x: logoddsPA[x])
 
         return train, test
-        
+
+    def bc_wc_oc(self, data, add_feature = False):
+        white_crime = ["FRAUD", "FORGERY/COUNTERFEITING", "BAD CHECKS" , "EXTORTION", "EMBEZZLEMENT", "SUSPICIOUS OCC", "BRIBERY", "GAMBLING"]
+        blue_crime = ["VANDALISM", "LARCENY/THEFT", "STOLEN PROPERTY", "ROBBERY", "DRIVING UNDER THE INFLUENCE", "DISORDERLY CONDUCT", "LIQUOR LAWS", "VEHICLE THEFT", "ASSAULT", "KIDNAPPING", "TRESPASS", "ARSON", "RECOVERED VEHICLE",  "SEX OFFENSES FORCIBLE","WEAPON LAWS", "DRUG/NARCOTIC", "FAMILY OFFENSES", "BURGLARY"]
+        other_crime = ["MISSING PERSON", "RUNAWAY",  'PROSTITUTION', "DRUNKENNESS", "SUICIDE",  "LOITERING", "OTHER OFFENSES", "NON-CRIMINAL", "WARRANTS", "SECONDARY CODES"]
+
+        data['bc_wc_oc'] = data['Category'].apply(lambda x: 'b' if x in blue_crime else ('w' if x in white_crime else ('o' if x in other_crime else 'error')))
+        if 'error' in data.train.bc_wc_oc.unique():
+            print('all categories not found')
+        if(add_feature):
+            self.features += ['bc_wc_oc']
+
