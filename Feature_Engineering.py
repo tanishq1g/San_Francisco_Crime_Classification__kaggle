@@ -166,7 +166,6 @@ class Feature_Engineering:
         test = pd.concat([test, bas_features_te], axis = 1)
         if(add_base_odds):
             test[base + '_odds'] = test[base].apply(lambda x: logoddsPA[x])
-            
-        return train, test
 
+        return train, test
         
