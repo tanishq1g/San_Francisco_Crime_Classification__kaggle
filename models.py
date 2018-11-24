@@ -20,8 +20,13 @@ class Model:
         else
             print("-")
 
+    def data_split(self, train, split_ratio):
+        train_data, test_data = train_test_split(train, train_size = split_ratio)
+        return train_data, test_data
+    
     #documentation link - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression
-    def lr_clf(self, train_data, test_data, features, labels, max_iter = 50, solver = 'sag', print_score = True, score_type):
+    def lr_clf(self, train_data, test_data, features, labels, max_iter = 50, solver = 'sag', 
+    print_score = True, score_type = 'logloss', test_type = 'val'):
         lr_clf = LogisticRegression(
             random_state = 200, 
             solver = solver,  #optimisation algo
@@ -35,14 +40,20 @@ class Model:
         predictions = np.array(lr_clf.predict_proba(test_data[features]))
         if (print_score == True):
             score_calc(predictions, test_data[labels], score_type)
+        if (test_type == 'test'):
+            return predictions
+
 
     #documentation link - https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.BernoulliNB.html#sklearn.naive_bayes.BernoulliNB
-    def bernb_clf(self, train_data, test_data, features, labels, print_score = True, score_type):
+    def bernb_clf(self, train_data, test_data, features, labels, print_score = True, 
+    score_type = 'logloss', test_type = 'val'):
         bernb_clf = BernoulliNB()
         bernb_clf.fit(train_data[features], train_data[labels])
         predictions = np.array(bernb_clf.predict_proba(test_data[features]))
         if (print_score == True):
             score_calc(predictions, test_data[labels], score_type)
+        if (test_type == 'test'):
+            return predictions
     
     #documentation link - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html#sklearn.linear_model.SGDClassifier
     def sgd_clf(self, train_data, test_data, features, labels, 
@@ -50,7 +61,7 @@ class Model:
     max_iter = None, tol = None, shuffle = True, verbose = 1, epsilon = 0.1, 
     learning_rate = 'optimal', eta0 = 0.0, power_t = 0.5, early_stopping = False, 
     validation_fraction = 0.1, n_iter_no_change = 5, class_weight = None, warm_start = False, 
-    average = False, max_iter = 50, print_score = True):
+    average = False, max_iter = 50, print_score = True, test_type = 'val', score_type = 'logloss'):
        sgd_clf = SGDClassifier(
             random_state = 200,
             loss = loss,
@@ -77,14 +88,17 @@ class Model:
         sgd_clf.fit(train_data[features], train_data[labels])
         predictions = np.array(sgd_clf.predict_proba(test_data[features]))
         if (print_score == True):
-            score_calc(predictions, test_data[labels], 'log_loss')
+            score_calc(predictions, test_data[labels], score_type)
+        if (test_type == 'test'):
+            return predictions
 
     #documentation link - https://xgboost.readthedocs.io/en/latest/python/python_api.html
     def xgb_clf(self, train_data, test_data, features, labels, max_depth = 3, learning_rate = 0.1, 
     n_estimators = 100, silent = True, objective = 'binary:logistic', booster = 'gbtree', nthread = None, 
     gamma = 0, min_child_weight = 1, max_delta_step = 0, subsample = 1, colsample_bytree = 1, 
     colsample_bylevel = 1, reg_alpha = 0, reg_lambda = 1, scale_pos_weight = 1, base_score = 0.5, 
-    early_stopping_rounds = 5, eval_metric = 'mlogloss', print_score = True):
+    early_stopping_rounds = 5, eval_metric = 'mlogloss', print_score = True, score_type = 'logloss', 
+    test_type = 'val'):
         xgb_clf = xgb.XGBClassifier(
             random_state = 200,
             max_depth = max_depth,
@@ -117,13 +131,16 @@ class Model:
         )
         predictions = np.array(xgb_clf.predict_proba(test_data[features]))
         if (print_score == True):
-            score_calc(predictions, test_data[labels], 'log_loss')
+            score_calc(predictions, test_data[labels], score_type)
+        if (test_type == 'test'):
+            return predictions
             
-        # documentation link - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html#sklearn.ensemble.RandomForestClassifier
-        def randfor_clf(self, n_estimators = 100, criterion = 'gini', max_depth = None, 
-        min_samples_split = 2, min_samples_leaf = 1, min_weight_fraction_leaf = 0.0, 
-        max_features = 'auto', max_leaf_nodes = None, min_impurity_decrease = 0.0, 
-        bootstrap = True, oob_score = False, warm_start = False, class_weight = None):
+    # documentation link - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html#sklearn.ensemble.RandomForestClassifier
+    def randfor_clf(self, train_data, test_data, features, labels, n_estimators = 100, 
+    criterion = 'gini', max_depth = None, min_samples_split = 2, min_samples_leaf = 1, 
+    min_weight_fraction_leaf = 0.0, max_features = 'auto', max_leaf_nodes = None, 
+    min_impurity_decrease = 0.0, bootstrap = True, oob_score = False, warm_start = False, 
+    class_weight = None, print_score = True, score_type = 'logloss', test_type = 'val'):
         randfor_clf = RandomForestClassifier(
             random_state = 200, 
             criterion = criterion,
@@ -146,3 +163,10 @@ class Model:
         predictions = np.array(randfor_clf.predict_proba(test_data[features]))
         if (print_score == True):
             score_calc(predictions, test_data[labels], score_type)
+        if (test_type == 'test'):
+            return predictions
+
+    def make_pred_file(predictions, labels, ids):
+        result = pd.DataFrame(predicted, columns = labels)
+        result.insert(loc = 0, column = 'Id', value = ids)
+        result.to_csv('submitnewlr.csv', index = False)
