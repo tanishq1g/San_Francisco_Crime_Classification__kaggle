@@ -29,7 +29,7 @@ class Model:
     #documentation link - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression
     def lr_clf(self, train_data, test_data, features, labels, max_iter = 50, solver = 'sag', 
     print_score = True, score_type = 'logloss'):
-        lr_clf = LogisticRegression(
+        self.curr_model = LogisticRegression(
             random_state = 200, 
             solver = solver,  #optimisation algo
             multi_class = 'multinomial',
@@ -38,23 +38,19 @@ class Model:
             verbose = 1,
             n_jobs = -1
         )
-        lr_clf.fit(train_data[features], train_data[labels])
-        predictions = np.array(lr_clf.predict_proba(test_data[features]))
-        self.curr_model = lr_clf
+        self.curr_model.fit(train_data[features], train_data[labels])
+        predictions = np.array(self.curr_model.predict_proba(test_data[features]))
         self.predictions = predictions
         if (print_score == True):
             score_calc(predictions, test_data[labels], score_type)
         
-
-
     #documentation link - https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.BernoulliNB.html#sklearn.naive_bayes.BernoulliNB
     def bernb_clf(self, train_data, test_data, features, labels, print_score = True, 
     score_type = 'logloss'):
-        bernb_clf = BernoulliNB()
-        bernb_clf.fit(train_data[features], train_data[labels])
-        self.curr_model = bernb_clf
+        self.curr_model = BernoulliNB()
+        self.curr_model.fit(train_data[features], train_data[labels])
+        predictions = np.array(self.curr_model.predict_proba(test_data[features]))
         self.predictions = predictions
-        predictions = np.array(bernb_clf.predict_proba(test_data[features]))
         if (print_score == True):
             score_calc(predictions, test_data[labels], score_type)
         
@@ -65,7 +61,7 @@ class Model:
     learning_rate = 'optimal', eta0 = 0.0, power_t = 0.5, early_stopping = False, 
     validation_fraction = 0.1, n_iter_no_change = 5, class_weight = None, warm_start = False, 
     average = False, max_iter = 50, print_score = True, score_type = 'logloss'):
-       sgd_clf = SGDClassifier(
+        self.curr_model = SGDClassifier(
             random_state = 200,
             loss = loss,
             verbose = 1,
@@ -88,9 +84,8 @@ class Model:
             power_t = power_t,
             early_stopping = early_stopping
         )
-        sgd_clf.fit(train_data[features], train_data[labels])
-        predictions = np.array(sgd_clf.predict_proba(test_data[features]))
-        self.curr_model = sgd_clf
+        self.curr_model.fit(train_data[features], train_data[labels])
+        predictions = np.array(self.curr_model.predict_proba(test_data[features]))
         self.predictions = predictions
         if (print_score == True):
             score_calc(predictions, test_data[labels], score_type)
@@ -101,7 +96,7 @@ class Model:
     gamma = 0, min_child_weight = 1, max_delta_step = 0, subsample = 1, colsample_bytree = 1, 
     colsample_bylevel = 1, reg_alpha = 0, reg_lambda = 1, scale_pos_weight = 1, base_score = 0.5, 
     early_stopping_rounds = 5, eval_metric = 'mlogloss', print_score = True, score_type = 'logloss'):
-        xgb_clf = xgb.XGBClassifier(
+        self.curr_model = xgb.XGBClassifier(
             random_state = 200,
             max_depth = max_depth,
             learning_rate = learning_rate,
@@ -123,7 +118,7 @@ class Model:
             subsample = subsample
         )
 
-        xgb_clf.fit(
+        self.curr_model.fit(
             X = train_data[features],
             y = train_data[labels],
             verbose = True,
@@ -131,8 +126,7 @@ class Model:
             eval_set = [(test_data[features], test_data[labels])],
             eval_metric = eval_metric
         )
-        predictions = np.array(xgb_clf.predict_proba(test_data[features]))
-        self.curr_model = xgb_clf
+        predictions = np.array(self.curr_model.predict_proba(test_data[features]))
         self.predictions = predictions
         if (print_score == True):
             score_calc(predictions, test_data[labels], score_type)
@@ -144,7 +138,7 @@ class Model:
     min_weight_fraction_leaf = 0.0, max_features = 'auto', max_leaf_nodes = None, 
     min_impurity_decrease = 0.0, bootstrap = True, oob_score = False, warm_start = False, 
     class_weight = None, print_score = True, score_type = 'logloss'):
-        randfor_clf = RandomForestClassifier(
+        self.curr_model = RandomForestClassifier(
             random_state = 200, 
             criterion = criterion,
             max_depth = max_depth,
@@ -162,14 +156,8 @@ class Model:
             verbose = 1,
             n_jobs = -1
         )
-        randfor_clf.fit(train_data[features], train_data[labels])
-        predictions = np.array(randfor_clf.predict_proba(test_data[features]))
-        self.curr_model = randfor_clf
+        self.curr_model.fit(train_data[features], train_data[labels])
+        predictions = np.array(self.curr_model.predict_proba(test_data[features]))
         self.predictions = predictions
         if (print_score == True):
             score_calc(predictions, test_data[labels], score_type)
-
-    def make_pred_file(predictions, labels, ids):
-        result = pd.DataFrame(predicted, columns = labels)
-        result.insert(loc = 0, column = 'Id', value = ids)
-        result.to_csv('submitnewlr.csv', index = False)
