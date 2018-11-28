@@ -44,8 +44,6 @@ class Model:
         if (print_score == True):
             score_calc(predictions, test_data[labels], score_type)
         
-
-
     #documentation link - https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.BernoulliNB.html#sklearn.naive_bayes.BernoulliNB
     def bernb_clf(self, train_data, test_data, features, labels, print_score = True, 
     score_type = 'logloss'):
