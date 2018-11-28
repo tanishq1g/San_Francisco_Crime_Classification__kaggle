@@ -100,28 +100,15 @@ class Feature_Engineering:
         return train, test
 
     def X_Y_rot(self, data, add_feature = True):
+        data[['new_X', 'new_Y']] = data[['X', 'Y']]
         sc = preprocessing.StandardScaler()
-        sc.fit(data[['X', 'Y']])
-        data[['new_X'], ['new_Y']] = sc.transform([['X', 'Y']])
+        data[['new_X', 'new_Y']] = sc.fit_transform(data[['X', 'Y']])
         data["rot45_X"], data["rot45_Y"] = .707 * data["new_Y"] + .707 * data["new_X"], .707 * data["new_Y"] - .707 * data["new_X"]
         data["rot30_X"], data["rot30_Y"] = (1.732/2) * data["new_X"] + (1./2) * data["new_Y"], (1.732/2) * data["new_Y"] - (1./2) * data["new_X"]
         data["rot60_X"], data["rot60_Y"] = (1./2) * data["new_X"] + (1.732/2) * data["new_Y"], (1./2)* data["new_Y"] - (1.732/2) * data["new_X"]
         data["radial_r"] = np.sqrt( np.power(data["new_Y"], 2) + np.power(data["new_X"], 2))
         if(add_feature):
             self.features += ['rot60_X', 'rot60_Y', 'rot30_X', 'rot30_Y', 'rot45_X', 'rot45_Y', 'radial_r']
-
-    def odds_base(self, train, test, base, col_name_prefix, add_feature = True):
-        bas_sort = sorted(train[base].unique())
-        bas_counts = train.groupby([base]).size()
-        new_bas_counts = test.groupby(base).size()
-        logoddsPA = {}
-        for bas in bas_sort:
-            PA = bas_counts[bas] / float(len(train))
-            logoddsPA[bas] = np.log(PA) - np.log(1.- PA)
-        train[base + '_odds'] = train[base].apply(lambda x: logoddsPA[x])
-        for bas in in_both:
-            PA = (bas_counts[bas] + new_bas_counts[bas]) / float(len(test) + len(train))
-            logoddsPA[bas] = np.log(PA) - np.log(1.- PA)
  
     def odds_base_target(self, train, test, base, target, col_name_prefix, add_base_odds = False, add_feature = True): #odds of target given base
         bas_sort = sorted(train[base].unique())
