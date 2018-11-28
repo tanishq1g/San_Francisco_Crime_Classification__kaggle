@@ -24,6 +24,9 @@ class Feature_Engineering:
                 self.features += onehot.columns.tolist()
         return data        
     
+    def add_feature(self, columns):
+        self.features += columns
+
     def add_seasons(self, data, add_feature = True):
         data['Summer'] = data['Month'].apply(lambda x: 1 if x in [6, 7, 8] else 0)
         data['Winter'] = data['Month'].apply(lambda x: 1 if x in [12, 1, 2] else 0)
