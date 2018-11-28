@@ -13,7 +13,7 @@ class Data_Postprocessing:
         model_pickle.close()
         return model_pickle
 
-    def use_pickle(pickle_file, Xtest):
+    def use_pickle(self, pickle_file, Xtest):
         model = open(pickle_file, 'rb')
         model_pickle = pickle.load(model)
         print("Loaded model :: ", model_pickle)

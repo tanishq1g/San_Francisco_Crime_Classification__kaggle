@@ -119,7 +119,7 @@ class Feature_Engineering:
         for bas in in_both:
             PA = (bas_counts[bas] + new_bas_counts[bas]) / float(len(test) + len(train))
             logoddsPA[bas] = np.log(PA) - np.log(1.- PA)
- 
+
     def odds_base_target(self, train, test, base, target, col_name_prefix, add_base_odds = False, add_feature = True): #odds of target given base
         bas_sort = sorted(train[base].unique())
         tar_sort = sorted(train[target].unique())
