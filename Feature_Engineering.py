@@ -166,3 +166,15 @@ class Feature_Engineering:
         new_data = pca.transform(data)
         return new_data
 
+    def add_cols(self, data, col1, col2, col_type, new_col_name):
+        data[new_col_name] = data[col1].astype(col_type) + data[col2].astype(col_type) 
+
+    def correlated_columns(self, data, lim):
+        corr = data.corr()
+        columns = np.full((corr.shape[0],), True, dtype=bool)
+        for i in range(corr.shape[0]):
+            for j in range(i+1, corr.shape[0]):
+                if corr.iloc[i,j] >= lim or corr.iloc[i,j] <= -lim:
+                    if columns[j]:
+                        columns[j] = False
+        return columns

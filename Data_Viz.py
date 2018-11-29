@@ -9,7 +9,7 @@ class Data_Viz:
         # for col in columns:
 
     def chk_corr(self, data):
-        plt.figure(figsize = (20, 15))
+        plt.figure(figsize = (40, 30))
         sns.heatmap(data.corr(), annot = True)
         plt.show()  
 
@@ -24,7 +24,7 @@ class Data_Viz:
     def map_kde_plot(self, x, y, category, data, map_path):
         map = np.loadtxt(map_path)
         plt.figure(figsize = (20, 15))
-        kde = sns.kdeplot(x = data[data["Category"] = category][x], y = data[data["Category"] = category][y])
+        kde = sns.kdeplot(x = data[data["Category"] == category][x], y = data[data["Category"] == category][y])
         kde.imshow(map, cmap=plt.get_cmap('gray'))
 
     
