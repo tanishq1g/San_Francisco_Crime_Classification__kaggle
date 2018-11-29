@@ -5,8 +5,8 @@ import seaborn as sns
 
 class Data_Viz:
 
-    def value_counts_graphs(self, train, columns):
-        for col in columns:
+    # def value_counts_graphs(self, train, columns):
+        # for col in columns:
 
     def chk_corr(self, data):
         plt.figure(figsize = (20, 15))

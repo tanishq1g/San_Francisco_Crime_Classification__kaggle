@@ -6,8 +6,7 @@ class Data_Preprocessing:
 
     def form_labels(self, data, label_col):
         le = preprocessing.LabelEncoder()
-        labels = le.fit_transform(data[label_col])
-        return labels
+        data[label_col] = le.fit_transform(data[label_col])
     
     def drop_labels(self, data, label_col):
         return data.drop(columns = [label_col])

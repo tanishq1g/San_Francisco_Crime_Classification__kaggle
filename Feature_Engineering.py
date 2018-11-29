@@ -3,6 +3,8 @@ import numpy as np
 from sklearn import preprocessing
 import pygeohash as pgh
 from copy import deepcopy
+from sklearn.decomposition import PCA
+import pygeohash as pgh
 
 class Feature_Engineering:
 
@@ -60,43 +62,31 @@ class Feature_Engineering:
             if(add_feature):
                 self.features += ['morning', 'night', 'evening', 'afternoon']
 
-    def geohashing(self, train, test, precision = 8, pivot_col = 'Resolution', add_feature = True):
-        geo1 = train.apply(lambda x: pgh.encode(x.X, x.Y, precision = precision), axis = 1)
-        train = pd.concat([train, pd.get_dummies(geo1)], axis = 1)
-        geo2 = test.apply(lambda x: pgh.encode(x.X, x.Y, precision = precision), axis = 1)
-        test = pd.concat([test, pd.get_dummies(geo2)], axis = 1)
-        if(add_feature):
-            self.features += geo1.unique().tolist()
-        c1 = 0
-        c2 = 0
-        for i in np.asarray(geo1.unique()):
-            flag = 0
-            for j in np.asarray(geo2.unique()):
-                if(i == j):
-                    flag = 1
-                    c1 += 1
-            if(flag == 0):
-                c2 += 1
-                print('unique',i)
-                test[j] = test[pivot_col].apply(lambda x: 0)
-                if(add_feature):
-                    self.features += [j]
-        print('count',c1,c2)
-        c1 = 0
-        c2 = 0
-        for i in np.asarray(geo2.unique()):
-            flag = 0
-            for j in np.asarray(geo1.unique()):
-                if(i == j):
-                    flag = 1
-                    c1 += 1
-            if(flag == 0):
-                c2 += 1
-                print('unique',i)
-                train[j] = train[pivot_col].apply(lambda x: 0)
-                if(add_feature):
-                    self.features += [j]
-        print('count',c1,c2)
+    def geohashing(self, train, test, precision = 3, pivot_col = 'Resolution', add_feature = True, is_onehot = True):
+        train['geohashes'] = train.apply(lambda x: pgh.encode(x.X, x.Y, precision = precision), axis = 1)
+        test['geohashes'] = test.apply(lambda x: pgh.encode(x.X, x.Y, precision = precision), axis = 1)
+        # if(add_feature):
+        #     self.features += geo1.unique().tolist()
+        # for i in np.asarray(geo1.unique()):
+        #     flag = 0
+        #     for j in np.asarray(geo2.unique()):
+        #         if(i == j):
+        #             flag = 1
+        #     if(flag == 0):
+        #         test[i] = test[pivot_col].apply(lambda x: 0)
+        #         if(add_feature):
+        #             self.features += [j]
+
+        # for i in np.asarray(geo2.unique()):
+        #     flag = 0
+        #     for j in np.asarray(geo1.unique()):
+        #         if(i == j):
+        #             flag = 1
+        #     if(flag == 0):
+        #         train[i] = train[pivot_col].apply(lambda x: 0)
+        #         if(add_feature):
+        #             self.features += [j]
+        
         return train, test
 
     def X_Y_rot(self, data, add_feature = True):
@@ -169,4 +159,10 @@ class Feature_Engineering:
             print('all categories not found')
         if(add_feature):
             self.features += ['bc_wc_oc']
+
+    def apply_PCA(self, data, n_components):
+        pca = PCA(n_components = n_components)
+        pca.fit(data)
+        new_data = pca.transform(data)
+        return new_data
 

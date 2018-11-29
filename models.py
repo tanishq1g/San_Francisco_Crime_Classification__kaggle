@@ -1,4 +1,5 @@
 import xgboost as xgb
+import numpy as np
 from sklearn.feature_extraction import text
 from sklearn import preprocessing
 from sklearn.metrics import log_loss, accuracy_score
@@ -14,17 +15,21 @@ class Model:
         self.curr_model = None
         self.predictions = None
 
-    def score_calc(self, predictions, test_data[labels], score_type = 'logloss'):
+    def score_calc(self, predictions, labels, score_type = 'logloss'):
         if (score_type == 'logloss'):
-            print(("Log loss: ") + str(log_loss(test_data[labels], predictions)))
+            print(("Log loss: ") + str(log_loss(labels, predictions)))
         elif (score_type == 'accuracy'):
-            print(("Accuracy score: ") + str(accuracy_score(test_data[labels], predictions)))
-        else
+            print(("Accuracy score: ") + str(accuracy_score(labels, predictions)))
+        else:
             print("-")
 
     def data_split(self, train, split_ratio):
         train_data, test_data = train_test_split(train, train_size = split_ratio)
         return train_data, test_data
+    
+    def data_split_new(self, train, labels, split_ratio):
+        Xtrain, Ytrain, Xtest, Ytest = train_test_split(train, labels, train_size = split_ratio)
+        return Xtrain, Ytrain, Xtest, Ytest
     
     #documentation link - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html#sklearn.linear_model.LogisticRegression
     def lr_clf(self, train_data, test_data, features, labels, max_iter = 50, solver = 'sag', 
@@ -42,7 +47,7 @@ class Model:
         predictions = np.array(self.curr_model.predict_proba(test_data[features]))
         self.predictions = predictions
         if (print_score == True):
-            score_calc(predictions, test_data[labels], score_type)
+            self.score_calc(predictions, test_data[labels], score_type)
         
     #documentation link - https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.BernoulliNB.html#sklearn.naive_bayes.BernoulliNB
     def bernb_clf(self, train_data, test_data, features, labels, print_score = True, 
@@ -52,14 +57,13 @@ class Model:
         predictions = np.array(self.curr_model.predict_proba(test_data[features]))
         self.predictions = predictions
         if (print_score == True):
-            score_calc(predictions, test_data[labels], score_type)
+            self.score_calc(predictions, test_data[labels], score_type)
         
     #documentation link - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html#sklearn.linear_model.SGDClassifier
     def sgd_clf(self, train_data, test_data, features, labels, 
     loss = 'log', penalty = 'l2', alpha = 0.001, l1_ratio = 0.15, fit_intercept = True, 
-    max_iter = None, tol = None, shuffle = True, verbose = 1, epsilon = 0.1, 
-    learning_rate = 'optimal', eta0 = 0.0, power_t = 0.5, early_stopping = False, 
-    validation_fraction = 0.1, n_iter_no_change = 5, class_weight = None, warm_start = False, 
+    tol = None, shuffle = True, verbose = 1, epsilon = 0.1, 
+    learning_rate = 'optimal', eta0 = 0.0, power_t = 0.5, class_weight = None, warm_start = False, 
     average = False, max_iter = 50, print_score = True, score_type = 'logloss'):
         self.curr_model = SGDClassifier(
             random_state = 200,
@@ -73,22 +77,19 @@ class Model:
             alpha = alpha,
             max_iter = max_iter,
             n_jobs = -1,
-            validation_fraction = validation_fraction,
-            n_iter_no_change = n_iter_no_change,
             class_weight = class_weight,
             warm_start = warm_start,
             l1_ratio = l1_ratio,
             fit_intercept = fit_intercept,
             epsilon = epsilon,
             eta0 = eta0,
-            power_t = power_t,
-            early_stopping = early_stopping
+            power_t = power_t
         )
         self.curr_model.fit(train_data[features], train_data[labels])
         predictions = np.array(self.curr_model.predict_proba(test_data[features]))
         self.predictions = predictions
         if (print_score == True):
-            score_calc(predictions, test_data[labels], score_type)
+            self.score_calc(predictions, test_data[labels], score_type)
 
     #documentation link - https://xgboost.readthedocs.io/en/latest/python/python_api.html
     def xgb_clf(self, train_data, test_data, features, labels, max_depth = 3, learning_rate = 0.1, 
@@ -129,7 +130,7 @@ class Model:
         predictions = np.array(self.curr_model.predict_proba(test_data[features]))
         self.predictions = predictions
         if (print_score == True):
-            score_calc(predictions, test_data[labels], score_type)
+            self.score_calc(predictions, test_data[labels], score_type)
         
             
     # documentation link - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html#sklearn.ensemble.RandomForestClassifier
@@ -160,4 +161,4 @@ class Model:
         predictions = np.array(self.curr_model.predict_proba(test_data[features]))
         self.predictions = predictions
         if (print_score == True):
-            score_calc(predictions, test_data[labels], score_type)
+            self.score_calc(predictions, test_data[labels], score_type)
